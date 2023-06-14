@@ -1,0 +1,1 @@
+{"source":["./design-tokens/brand2.json"],"platforms":{"css":{"transformGroup":"css","buildPath":"public/css/design-tokens/","files":[{"destination":"brand2.css","format":"css/variables"}]}}}

@@ -1,0 +1,17 @@
+{
+	"source": [
+		"./src/designtokens.json"
+	],
+	"platforms": {
+		"css": {
+			"transformGroup": "css",
+			"buildPath": "./src/build/css/",
+			"files": [
+				{
+					"destination": "_variables.css",
+					"format": "css/variables"
+				}
+			]
+		}
+	}
+}

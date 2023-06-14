@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body {
+  min-height: 100vh;
+}
+
+.main-content {
+  min-height: 100vh;
+  @apply justify-center items-center text-center flex flex-col bg-slate-800 text-white;
+}
+
+.cards-container {
+  @apply flex gap-10;
+}
+
+.card {
+  @apply flex-1 max-w-sm text-center flex content-center items-center px-4 py-3;
+  background-color: var(--colors-theme-bg);
+  color: var(--colors-theme-text);
+  font-size: var(--font-sizes-card);
+  border-radius: var(--border-radius-card, 50px);
+  min-height: 300px;
+}
