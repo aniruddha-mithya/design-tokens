@@ -42,7 +42,7 @@ export const generateBrandCSS = (
       let genCSS = fs.readFileSync(generatedFilePath).toString();
       genCSS = `.${brandName} {\n` + genCSS.split("\n").slice(6).join("\n");
       fs.writeFileSync(generatedFilePath, genCSS);
-      resolve(generatedFilePath);
+      resolve(generatedFilePath.replace("public", ""));
     });
   });
 };
