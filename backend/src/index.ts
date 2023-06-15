@@ -33,6 +33,10 @@ app.post("/brand-tokens", (req, res, next) => {
     fields[name] = value;
   });
   form.parse(req, () => {
+    if (!files.length || (files.length === 1 && files[0].size === 0)) {
+      res.json(brandTokensList);
+      return;
+    }
     files.forEach(async (file, index) => {
       const oldPath = file.filepath;
       try {
