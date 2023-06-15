@@ -12,6 +12,10 @@ const Form: FC = (props) => {
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       const bodyFormData = new FormData(event.currentTarget);
+      if (!bodyFormData.get("name") && bodyFormData.get("design-tokens")) {
+        alert("Please add a name");
+				return;
+      }
       const { data: brands } = await axios.request({
         url: "brand-tokens",
         method: "POST",
