@@ -1,0 +1,27 @@
+.brand-heading {
+	font-size: var(--font-sizes-h1);
+	color: var(--colors-theme-text);
+	margin-bottom: 40px;
+}
+
+.root {
+	background-color: var(--colors-theme-bg);
+	color: var(--colors-theme-text);
+	min-height: calc(100vh - 56px);
+	@apply pt-2 px-3;
+}
+
+.cards-container {
+	@apply flex gap-10 items-center justify-center;
+}
+
+.card {
+	@apply flex-1 max-w-sm text-center flex content-center items-center px-4 py-3 hover:opacity-90 cursor-pointer transition-opacity;
+	transition-duration: 400ms;
+	background-color: var(--colors-theme-bg);
+	color: var(--colors-theme-text);
+	font-size: var(--font-sizes-card);
+	border-radius: var(--border-radius-card);
+	box-shadow: 0 0 8px 1px rgba(0, 0, 0, 0.1);
+	min-height: 300px;
+}
