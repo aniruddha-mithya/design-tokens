@@ -1,6 +1,9 @@
 import fs from "fs";
-import { exec } from "child_process";
+import cors from "cors";
 import express from "express";
+import formidable, { File } from "formidable";
+import path from "path";
+import { generateBrandCSS } from "./design-tokens/script";
 
 const app = express();
 const port = 3000;
@@ -13,40 +16,51 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
+app.use(cors({ origin: "*" }));
 app.use(express.static("./public"));
+const brandTokensList: { brandName: string; cssFile: string }[] = [];
 
-const allDesignTokenFiles = fs.readdirSync("./design-tokens");
+const tokenStorageLocation = path.join(__dirname, "design-tokens/token-files");
 
-const defaultConfig = {
-  source: [] as string[],
-  platforms: {
-    css: {
-      transformGroup: "css",
-      buildPath: "",
-      files: [
-        {
-          destination: "",
-          format: "css/variables",
-        },
-      ],
-    },
-  },
-};
-
-
-allDesignTokenFiles.forEach((file) => {
-  const brandConfig = { ...defaultConfig };
-  const fileNameSansExt = file.split(".")[0];
-  brandConfig.source = [`./design-tokens/${file}`];
-  brandConfig.platforms.css.buildPath = `public/css/design-tokens/`;
-  brandConfig.platforms.css.files[0].destination = `${fileNameSansExt}.css`;
-  const generatedFilePath = `${brandConfig.platforms.css.buildPath}${brandConfig.platforms.css.files[0].destination}`;
-  const configFilePath = `config-${file}`;
-  fs.writeFileSync(configFilePath, JSON.stringify(brandConfig));
-  const proc = exec(`npx style-dictionary build --config ${configFilePath}`);
-  proc.addListener("close", () => {
-    let genCSS = fs.readFileSync(generatedFilePath).toString();
-    genCSS = `.${fileNameSansExt}{\n` + genCSS.split("\n").slice(6).join("\n");
-    fs.writeFileSync(generatedFilePath, genCSS);
+app.post("/brand-tokens", (req, res, next) => {
+  const form = new formidable.IncomingForm();
+  const files: File[] = [];
+  const fields: Record<string, string> = {};
+  form.on("file", (fieldName, file) => {
+    files.push(file);
   });
+  form.on("field", (name, value) => {
+    fields[name] = value;
+  });
+  form.parse(req, () => {
+    files.forEach(async (file, index) => {
+      const oldPath = file.filepath;
+      try {
+        fs.lstatSync(tokenStorageLocation);
+      } catch (err) {
+        fs.mkdirSync(tokenStorageLocation);
+      }
+      const newPath = path.join(
+        __dirname,
+        "design-tokens/token-files",
+        fields["name"] + ".json"
+      );
+      fs.renameSync(oldPath, newPath);
+      console.log(`Saved file ${newPath}`);
+      saveCompletedFileCount++;
+      if (index === files.length - 1) {
+        if (saveCompletedFileCount === files.length) {
+          const generatedCSSPath = await generateBrandCSS(fields.name, newPath);
+          brandTokensList.push({
+            brandName: fields.name,
+            cssFile: generatedCSSPath,
+          });
+          res.json(brandTokensList);
+        } else {
+          res.sendStatus(207);
+        }
+      }
+    });
+  });
+  let saveCompletedFileCount = 0;
 });
